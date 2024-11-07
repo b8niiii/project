@@ -22,4 +22,5 @@ for element in columns:
     perc = percentage(element)
     print(f"{element}, {perc}: of the dataset's animals ")
     plot = plt.bar(["No","Yes"],[1-perc, perc], color = 'green' )
+# %%
 
