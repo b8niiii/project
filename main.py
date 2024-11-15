@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import torch
 import numpy as np
 import streamlit as st
+from modules.classification import Animal, AnimalClassifier
 animal_class = pd.read_csv("animals_data\class.csv") # this is the actual division
 zoo = pd.read_csv("animals_data\zoo.csv") # data we should work on 
 
