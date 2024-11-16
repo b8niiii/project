@@ -57,13 +57,27 @@ def percentage(column_name):
 percentage("feathers")
 
 columns = columns.drop(['animal_name','legs', 'class_type'])
+
 plots = []
 for element in columns:
     perc = percentage(element)
-    plot = plt.bar(["No","Yes"],[1-perc, perc], color = 'lightblue' )
-    plt.title(f"{element.capitalize()}, {round(perc, 2)}% of the dataset's animals ")
-    st.pyplot()  # Display each bar chart in the Streamlit app
+    
+    # Create a figure and save it in the list
+    fig, ax = plt.subplots()
+    ax.bar(["No", "Yes"], [1 - perc, perc], color='lightblue')
+    ax.set_title(f"{element.capitalize()}, {round(perc, 2)}% of the dataset's animals")
+    plots.append(fig)
 
+rows = 5
+cols = 3
+
+for i in range(rows):
+    cols_container = st.columns(cols)
+    for j, col in enumerate(cols_container):
+        index = i * cols + j
+        if index < len(plots):
+            with col:
+                st.pyplot(plots[index])
 
 
 mask = zoo['catsize'] == True
