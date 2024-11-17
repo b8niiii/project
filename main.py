@@ -187,19 +187,20 @@ for col in predicted_columns:
     ax.set_title(f'{col.capitalize()} Dendrogram')
     ax.set_xlabel('Samples')
     ax.set_ylabel('Distance')
+    ax.set_xticks([]) # to remove the observation's labels
     dend_plots.append(fig)
 
 
 Plotting.plot_organizer(dend_plots, 2, 2)
-""" PCA + clustering
-Since none of the hierarchical clusterings provided the results we expected, let's try with applying the principal component analysis and k means clustering on the principal components.
-The goal of the PCA is to transform the set of correlated variables in a non-correlated variables set.
-To apply PCA we need to:
-    1. Compute the covariance matrix 
-    2. Compute egenvalues and eigenvectors to understand the direction of the principal components and
-        their strength (eigenvalues)
-    3. Create the components
-These three steps are automatically performed by scikit learn when applying pca."""
+# PCA + clustering
+#Since none of the hierarchical clusterings provided the results we expected, let's try with applying the principal component analysis and k means clustering on the principal components.
+#The goal of the PCA is to transform the set of correlated variables in a non-correlated variables set.
+#To apply PCA we need to:
+#  1. Compute the covariance matrix 
+#  2. Compute egenvalues and eigenvectors to understand the direction of the principal components and
+#     their strength (eigenvalues)
+#  3. Create the components
+#These three steps are automatically performed by scikit learn when applying pca.
 
 # compute the covariance matrix:
 pca = PCA(12)
@@ -226,34 +227,25 @@ k_means = KMeans(n_clusters= 7, random_state= 42).fit(pc)
 
 cm = confusion_matrix(zoo['class_type'], k_means.labels_)
 cm_sorted = cm[np.ix_(zoo['class_type'].value_counts().sort_values().index, pd.Series(k_means.labels_).value_counts().sort_values().index )]
-plt.figure(figsize=(8, 6))
+fig, ax = plt.subplots()
 sns.heatmap(cm_sorted, annot=True, fmt='d', cmap='viridis')  #  annot = True means that we are annotating the results inside the cells,
 # fmt = d indicates the format that is decimals, cmap = viridis indicates the color of the cm
-plt.title(f'Confusion Matrix for {col}')
-plt.xlabel('Predicted Cluster')
-plt.ylabel('Actual Category')
-plt.show()
-
-
-
-
-
-
-
-
-
-
+ax.set_title(f'Confusion Matrix for PCA + Cluster')
+ax.set_xlabel('Predicted Cluster')
+ax.set_ylabel('Actual Category')
+st.pyplot(fig)
 
 
 # Let's train a supervised model now to predict a new animal's class.
-
-print(zoo.columns)
+st.markdown("##Let's use a _supervised model_ to predict animal species: \n Here you can play with a _TREE CLASSIFIER_")
 pred_df = zoo
 zoo_dict = {}
 for i in animal_class['Class_Number']:
     zoo_dict[i] = animal_class['Class_Type'][i-1]
 
-zoo_dict # we want to use a dictionary in order to map the elements and understand the actual lable meaning. 
+ # we want to use a dictionary in order to map the elements and understand the actual lable meaning. 
+
+
 
 pred_df['class_type'] = pred_df['class_type'].map(zoo_dict)
 print(pred_df)
@@ -263,13 +255,89 @@ Y = pred_df['class_type']
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2 ,random_state = 42)
 print(X.info())
 
-animal = Animal(feathers= True, eggs= True, predator= False, 
-                airborne= True, backbone= True, breathes= True, 
-                legs= True)
+animal = Animal()
 
 print(x_train, y_train)
+
+
 classifier = AnimalClassifier()
-print('jsfbidfifirf')
+
 classifier.train(X= x_train, y= y_train)
-print('bbbbbbbbbb')
-print(classifier.predict(animal=animal))
+
+attributes = [
+    "hair", "feathers", "eggs", "milk", "predator", "airborne", "toothed",
+    "backbone", "breathes", "venomous", "fins", "legs", "tail", "aquatic",
+    "domestic", "catsize"
+]
+
+for attr in attributes:
+    if attr not in st.session_state:
+        st.session_state[attr] = False
+
+
+hair, feathers, eggs, milk, predator, airborne, toothed, backbone = st.columns(8)
+if hair.button("Hair", use_container_width=True):
+    st.session_state["hair"] = not st.session_state["hair"]
+    
+if feathers.button("feathers", use_container_width=True):
+    st.session_state["feathers"] = not st.session_state["feathers"]
+    
+if eggs.button("eggs", use_container_width=True):
+    st.session_state["eggs"] = not st.session_state["eggs"]
+    
+if milk.button("milk", use_container_width=True):
+    st.session_state["milk"] = not st.session_state["milk"]
+    
+if predator.button("predator", use_container_width=True):
+    st.session_state["predator"] = not st.session_state["predator"]
+    
+if airborne.button("airborne", use_container_width=True):
+    st.session_state["airborne"] = not st.session_state["airborne"]
+    
+if toothed.button("toothed", use_container_width=True):
+    st.session_state["toothed"] = not st.session_state["toothed"]
+    
+if backbone.button("backbone", use_container_width=True):
+    st.session_state["backbone"] = not st.session_state["backbone"]
+    
+
+# Iterate over the session state and print each key-value pair
+
+breathes, venomous, fins, legs, tail, acquatic, domestic, catsize = st.columns(8)
+if breathes.button("breathes", use_container_width=True):
+    st.session_state["breathes"] = not st.session_state["breathes"]
+    
+if venomous.button("venomous", use_container_width=True):
+    st.session_state["venomous"] = not st.session_state["venomous"]
+    
+if fins.button("fins", use_container_width=True):
+    st.session_state["fins"] = not st.session_state["fins"]
+    
+if legs.button("legs", use_container_width=True):
+    st.session_state["legs"] = not st.session_state["legs"]
+    
+if tail.button("tail", use_container_width=True):
+    st.session_state["tail"] = not st.session_state["tail"]
+    
+if acquatic.button("acquatic", use_container_width=True):
+    st.session_state["aquatic"] = not st.session_state["aquatic"]
+    
+if domestic.button("domestic", use_container_width=True):
+    st.session_state["domestic"] = not st.session_state["domestic"]
+    
+if catsize.button("catsize", use_container_width=True):
+    st.session_state["catsize"] = not st.session_state["catsize"]
+    
+
+
+st.write("### Chosen attributes:")
+for key, value in st.session_state.items():
+    if value:
+        st.write(f"{key}: {value}")
+
+for attr in attributes:
+    setattr(animal, attr, st.session_state[attr])
+
+    
+if st.button("Predict"):
+    st.markdown(classifier.predict(animal=animal))
