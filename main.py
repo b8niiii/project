@@ -167,7 +167,31 @@ effort towards that goal."""
 
 predicted_columns = ['ward', 'average', 'single', 'complete']
 # Assuming 'actual' is the column with the actual values and 'cluster_method1' is one of the clustering columns
+plot_list = []
 for col in predicted_columns:
+    cm = confusion_matrix(df['class_type'], df[col])
+    cm_sorted = cm[np.ix_(df['class_type'].value_counts().sort_values().index, df[col].value_counts().sort_values().index )]
+    fig, ax = plt.subplots()
+    sns.heatmap(cm_sorted, annot=True, fmt='d', cmap='viridis')  #  annot = True means that we are annotating the results inside the cells,
+    # fmt = d indicates the format that is decimals, cmap = viridis indicates the color of the cm
+    ax.set_title(f'Confusion Matrix for {col}')
+    ax.set_xlabel('Predicted Cluster')
+    ax.set_ylabel('Actual Category')
+    plot_list.append(fig)
+
+rows = 2
+cols = 2
+
+for i in range(rows):
+    cols_container = st.columns(cols)
+    for j, col in enumerate(cols_container):
+        index = i * cols + j
+        if index < len(plot_list):
+            with col:
+                st.pyplot(plot_list[index])
+
+    
+"""for col in predicted_columns:
     cm = confusion_matrix(df['class_type'], df[col])
     cm_sorted = cm[np.ix_(df['class_type'].value_counts().sort_values().index, df[col].value_counts().sort_values().index )]
     plt.figure(figsize=(8, 6))
@@ -177,7 +201,7 @@ for col in predicted_columns:
     plt.xlabel('Predicted Cluster')
     plt.ylabel('Actual Category')
     plt.show()
-
+"""
 
 
     """Then we can use a dendogram to visualize the division in clusters:"""
