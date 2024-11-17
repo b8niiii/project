@@ -14,6 +14,8 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.model_selection import train_test_split
 import warnings
 warnings.filterwarnings("ignore")
+from modules.plotting import Plotting
+
 
 
 animal_class = pd.read_csv("animals_data\class.csv") # this is the actual division
@@ -27,7 +29,7 @@ st.title('Animal guesser')
 st.header("Let's guess the animal's species")
 st.subheader("This is a Subheader")
 st.text("""The system is going to predict the animal species based on a 
-        machine learning model./n The model is a decision tree classifier trained on 
+        machine learning model. The model is a decision tree classifier trained on 
         100 animal species """)
 st.markdown("Let's see how __the model__ behaves:")
 
@@ -71,13 +73,7 @@ for element in columns:
 rows = 5
 cols = 3
 
-for i in range(rows):
-    cols_container = st.columns(cols)
-    for j, col in enumerate(cols_container):
-        index = i * cols + j
-        if index < len(plots):
-            with col:
-                st.pyplot(plots[index])
+Plotting.plot_organizer(plots, rows, cols)
 
 
 mask = zoo['catsize'] == True
@@ -154,12 +150,13 @@ print(f"Actual labels: {df['average'].value_counts().sort_values()}")
 print(f"Actual labels: {df['single'].value_counts().sort_values()}")
 print(f"Actual labels: {df['complete'].value_counts().sort_values()}")
 
-"""The approach above doesn't really tell much on how accurate we have been.
- We can use the confusion matrix to confront predicted and actual values:"""
+
+st.markdown("""####The approach above doesn't really tell much on how accurate we have been.
+ ####We can use the _confusion matrix_ to confront predicted and actual values:""")
 
 """
 We sort the confusion matrix by taking the index of the sorted list of value 
-counts so that a greater index refers to the actual class with more observations.
+counts so that a __greater index__ refers to the actual __class with more observations__.
 This method doesn't ensure that we are talking about the same class but is an 
 effort towards that goal."""
 
@@ -179,42 +176,22 @@ for col in predicted_columns:
     ax.set_ylabel('Actual Category')
     plot_list.append(fig)
 
-rows = 2
-cols = 2
+Plotting.plot_organizer(plot_list, 2, 2)
 
-for i in range(rows):
-    cols_container = st.columns(cols)
-    for j, col in enumerate(cols_container):
-        index = i * cols + j
-        if index < len(plot_list):
-            with col:
-                st.pyplot(plot_list[index])
-
-    
-"""for col in predicted_columns:
-    cm = confusion_matrix(df['class_type'], df[col])
-    cm_sorted = cm[np.ix_(df['class_type'].value_counts().sort_values().index, df[col].value_counts().sort_values().index )]
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(cm_sorted, annot=True, fmt='d', cmap='viridis')  #  annot = True means that we are annotating the results inside the cells,
-    # fmt = d indicates the format that is decimals, cmap = viridis indicates the color of the cm
-    plt.title(f'Confusion Matrix for {col}')
-    plt.xlabel('Predicted Cluster')
-    plt.ylabel('Actual Category')
-    plt.show()
-"""
-
-
-    """Then we can use a dendogram to visualize the division in clusters:"""
+dend_plots =[]
+"""Then we can use a dendogram to visualize the division in clusters:"""
 for col in predicted_columns:
     link = hierarchy.linkage(df, method= col) # Use linkage method to construct the matrix of dendogram connections
-    plt.figure(figsize=(8, 6))
+    fig, ax = plt.subplots()
     hierarchy.dendrogram(link) 
-    plt.title(f'{col.capitalize()} Dendrogram')
-    plt.xlabel('Samples')
-    plt.ylabel('Distance')
-    plt.show()
+    ax.set_title(f'{col.capitalize()} Dendrogram')
+    ax.set_xlabel('Samples')
+    ax.set_ylabel('Distance')
+    dend_plots.append(fig)
 
-    """ PCA + clustering
+
+Plotting.plot_organizer(dend_plots, 2, 2)
+""" PCA + clustering
 Since none of the hierarchical clusterings provided the results we expected, let's try with applying the principal component analysis and k means clustering on the principal components.
 The goal of the PCA is to transform the set of correlated variables in a non-correlated variables set.
 To apply PCA we need to:
