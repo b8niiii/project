@@ -275,7 +275,7 @@ for attr in attributes:
         st.session_state[attr] = False
 
 
-hair, feathers, eggs, milk, predator, airborne, toothed, backbone = st.columns(8)
+hair, feathers, eggs, milk = st.columns(4)
 if hair.button("Hair", use_container_width=True):
     st.session_state["hair"] = not st.session_state["hair"]
     
@@ -287,7 +287,8 @@ if eggs.button("eggs", use_container_width=True):
     
 if milk.button("milk", use_container_width=True):
     st.session_state["milk"] = not st.session_state["milk"]
-    
+
+predator, airborne, toothed, backbone  = st.columns(4)
 if predator.button("predator", use_container_width=True):
     st.session_state["predator"] = not st.session_state["predator"]
     
@@ -301,9 +302,7 @@ if backbone.button("backbone", use_container_width=True):
     st.session_state["backbone"] = not st.session_state["backbone"]
     
 
-# Iterate over the session state and print each key-value pair
-
-breathes, venomous, fins, legs, tail, acquatic, domestic, catsize = st.columns(8)
+breathes, venomous, fins, legs = st.columns(4)
 if breathes.button("breathes", use_container_width=True):
     st.session_state["breathes"] = not st.session_state["breathes"]
     
@@ -315,7 +314,8 @@ if fins.button("fins", use_container_width=True):
     
 if legs.button("legs", use_container_width=True):
     st.session_state["legs"] = not st.session_state["legs"]
-    
+
+tail, acquatic, domestic, catsize = st.columns(4)   
 if tail.button("tail", use_container_width=True):
     st.session_state["tail"] = not st.session_state["tail"]
     
@@ -338,6 +338,6 @@ for key, value in st.session_state.items():
 for attr in attributes:
     setattr(animal, attr, st.session_state[attr])
 
-    
+
 if st.button("Predict"):
     st.markdown(classifier.predict(animal=animal))
