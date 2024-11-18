@@ -338,6 +338,6 @@ for key, value in st.session_state.items():
 for attr in attributes:
     setattr(animal, attr, st.session_state[attr])
 
-
-if st.button("Predict"):
+col1, col2, col3 = st.beta_columns(3)
+if col2("Predict"):
     st.markdown(classifier.predict(animal=animal))
