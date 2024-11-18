@@ -237,7 +237,7 @@ st.pyplot(fig)
 
 
 # Let's train a supervised model now to predict a new animal's class.
-st.markdown("##Let's use a _supervised model_ to predict animal species: \n Here you can play with a _TREE CLASSIFIER_")
+st.markdown("## Let's use a _supervised model_ to predict animal species: \n Here you can play with a _TREE CLASSIFIER_")
 pred_df = zoo
 zoo_dict = {}
 for i in animal_class['Class_Number']:
@@ -301,20 +301,6 @@ if toothed.button("toothed", use_container_width=True):
 if backbone.button("backbone", use_container_width=True):
     st.session_state["backbone"] = not st.session_state["backbone"]
     
-
-breathes, venomous, fins, legs = st.columns(4)
-if breathes.button("breathes", use_container_width=True):
-    st.session_state["breathes"] = not st.session_state["breathes"]
-    
-if venomous.button("venomous", use_container_width=True):
-    st.session_state["venomous"] = not st.session_state["venomous"]
-    
-if fins.button("fins", use_container_width=True):
-    st.session_state["fins"] = not st.session_state["fins"]
-    
-if legs.button("legs", use_container_width=True):
-    st.session_state["legs"] = not st.session_state["legs"]
-
 tail, acquatic, domestic, catsize = st.columns(4)   
 if tail.button("tail", use_container_width=True):
     st.session_state["tail"] = not st.session_state["tail"]
@@ -327,6 +313,21 @@ if domestic.button("domestic", use_container_width=True):
     
 if catsize.button("catsize", use_container_width=True):
     st.session_state["catsize"] = not st.session_state["catsize"]
+
+breathes, venomous, fins = st.columns(3)
+if breathes.button("breathes", use_container_width=True):
+    st.session_state["breathes"] = not st.session_state["breathes"]
+    
+if venomous.button("venomous", use_container_width=True):
+    st.session_state["venomous"] = not st.session_state["venomous"]
+    
+if fins.button("fins", use_container_width=True):
+    st.session_state["fins"] = not st.session_state["fins"]
+
+left, middle, centre = st.columns(3) 
+selected_legs =middle.slider("legs",0, 8, 1)
+st.session_state["legs"] = selected_legs
+
     
 
 
@@ -338,6 +339,7 @@ for key, value in st.session_state.items():
 for attr in attributes:
     setattr(animal, attr, st.session_state[attr])
 
-col1, col2, col3 = st.columns(3)
-if col2("Predict"):
+
+# col1, col2, col3 = st.columns(3)
+if st.button("Predict"):
     st.markdown(classifier.predict(animal=animal))

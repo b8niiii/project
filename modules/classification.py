@@ -39,7 +39,7 @@ class Animal:
             int(self.hair), int(self.feathers), int(self.eggs),
             int(self.milk), int(self.predator), int(self.airborne),
             int(self.toothed), int(self.backbone), int(self.breathes),
-            int(self.venomous), int(self.fins), self.legs,
+            int(self.venomous), int(self.fins), int(self.legs),
             int(self.tail), int(self.aquatic), int(self.domestic),
             int(self.catsize)]])
 
