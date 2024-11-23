@@ -10,12 +10,6 @@ class Plotting:
     or individually. It also supports downloading plots directly from the app.
     """
 
-    def __init__(self):
-        """
-        Initializes the Plotting class. Currently, no attributes are set in the initializer.
-        """
-        pass
-
     @staticmethod
     def plot_organizer(list, rows, cols):
         """

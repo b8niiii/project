@@ -26,7 +26,7 @@ zoo = pd.read_csv("animals_data\zoo.csv") # data we should work on
 
 
 st.title('Animal guesser')
-st.header("Brief analysis on animal species.")
+st.header("Brief analysis on animal species.", divider = "grey")
 st.markdown("###### The following are some interesting information extracted from a kaggle dataset.")
 st.markdown("""[Dataset link](https://www.kaggle.com/datasets/uciml/zoo-animal-classification/data)""")
 st.markdown("###### Let's start our explorative analysis by plotting some data:")
@@ -36,14 +36,18 @@ st.write("")
 st.write("")
 st.write("")
 
-columns = zoo.columns #Pandas uses Index objects for better performance and consistency across its DataFrames and Series, it is not a list
 
 plot = zoo.boxplot("legs", grid = False, vert = False, patch_artist = True )
-plot.set_title("Box plot of legs distribution")
+plot.set_title("Legs Distribution (Box Plot)")
 fig = plot.figure # we get the figure out of the Axis object
 st.pyplot(fig)
 
-
+summary = round(zoo["legs"].describe(), 2).to_frame().T # we converted the series object into a dataframe and then transposed it
+st.dataframe(summary)
+st.markdown(""" In the boxpot we can visualize what was printed with the summary function. It is interesting to see that the third quartile is at 4 legs, meaning that the 75% of the animals is distributed between 0 and 4 legs. The mean is 2.84. """)
+st.write("")
+st.write("")
+st.write("")
 
 legs_count = zoo['legs'].value_counts().to_dict() # dictionary that counts the occurrencies for every possible values
 
@@ -56,15 +60,14 @@ ax.pie(legs_count.values(), labels = legs_count.keys(), autopct= '%1.0f%%',
                   "#1B3A93", 
                   "#12275E"]
 )
-
+ax.set_title("Distribution of Animals by Number of Legs (Pie Chart)")
 st.pyplot(fig)
 
 def percentage(column_name):
     percent = int(zoo[column_name].sum()) / 101 
     return percent
 
-percentage("feathers")
-
+columns = zoo.columns # Pandas uses Index objects for better performance and consistency across its DataFrames and Series, it is not a list
 columns = columns.drop(['animal_name','legs', 'class_type'])
 
 plots = []
@@ -85,47 +88,31 @@ indice = columns.get_loc(scelta) # get_loc() is optimized for Index objects and 
 Plotting.show_plot(plots, indice, figsize=(8,6))
 
 
-mask = zoo['catsize'] == True
-print(f"{len(zoo[mask])} animals are domestic in our dataset")
-zoo[~mask].head()
-cat_dom = zoo[mask][zoo.domestic == True] #df of both catsize and domestic animals
-
-per_cat_dom = len(zoo[mask][zoo.domestic == True])/len(zoo[mask]) # % of domestic animals among the cat size ones
-print(f"{round(per_cat_dom, 2)}% of catsize animals are domestic in the dataset ")
-
-"""So the 13% of the dataset refers to domestic animals and almost the 14% of the catsize animals are domestic.
-Let's see among non cat size animals, we expect to have a lower percentage."""
-
-non_cat_dom = zoo[~mask][zoo.domestic == True]
-per_non_cat_dom = len(non_cat_dom)/len(zoo[~mask])
-print(f"{per_non_cat_dom}% of the non catsize animals are domestic among the ones in the dataset")
-
-"""8% of the animals are venomous, let's see among the zero legged ones:"""
-mask1 = zoo['legs']== 0
-zero_leg_ven = len(zoo[mask1][zoo.venomous == True])/len(zoo[mask1])
-print(f"{zero_leg_ven}% of the zero legged animals are venomous.")
-
 zoo_columns = zoo.columns
-zoo_columns = zoo_columns.drop(['class_type', 'animal_name'])
+zoo_columns = zoo_columns.drop(['class_type', 'animal_name']) # we don't remove legs this time
 df = zoo[zoo_columns] # we call df what we are going to use for the clustering algorithm
 
-"""Agglomerative clustering is the type of hierarchical clustering that creates clusters 
-starting from the bottom and going up.At the start, each data point has its own cluster, 
+st.write("")
+st.write("")
+st.write("")
+
+st.subheader("Developing of unsupervised machine learning methods")
+st.subheader("Agglomerative Clustering", divider = "grey")
+"""__Agglomerative clustering__ is the type of __hierarchical clustering__ that creates clusters 
+starting from the bottom __(singular observations)__ and going up __(merging data into clusters)__.At the start, each data point has its own cluster, 
 the process ends when we reach the requested number of clusters, 7 in our case."""
 
 """
 
-The parameters of the agglomerative clustering we are interested in, are:
-- n_clusters: specifies the number of clusters wanted
--   linkage: specifies the linkage criteria:
-    - __ward__: minimizes the variance of the clusters being merged (__default__)
-    - __average__: uses the average of the distances of each observation of the two sets
-    - __complete__: uses the maximum distances between all observations of the two sets
-    - __single__: uses the minimum of the distances of betewwn all observation of the two sets
+The agglomerative clustering can be performed with different linkage criteria:
+-  __ward__: minimizes the variance of the clusters being merged 
+-  __average__: uses the average of the distances of each observation of the two sets
+- __complete__: uses the maximum distances between all observations of the two sets
+-  __single__: uses the minimum of the distances of betewwn all observation of the two sets
 
 """
 
-clustering_ward = AgglomerativeClustering(n_clusters= 7)
+clustering_ward = AgglomerativeClustering(n_clusters= 7, linkage = "ward")
 clustering_avg = AgglomerativeClustering(n_clusters= 7, linkage='average')
 clustering_cmpl = AgglomerativeClustering(n_clusters= 7, linkage='complete')
 clustering_sngl = AgglomerativeClustering(n_clusters= 7, linkage='single')
@@ -137,8 +124,7 @@ clustering_avg.fit(df)
 clustering_cmpl.fit(df)
 clustering_sngl.fit(df)
 
-# zoo['class_type'].value_counts().sort_values()
-animal_class["Number_Of_Animal_Species_In_Class"].sort_values()
+st.markdown(""" The following table shows the number of species for each class: the first column is the count of occurrencies in the actual "species" column, the latter four report the count of the four predictions.""")
 
 #append lables to the df
 ward = clustering_ward.labels_ 
@@ -151,17 +137,18 @@ df['average'] = average
 df['single'] = single
 df['complete'] = complete
 
-
-#Let's print the count of the values to see if we did good
-print(f"Actual labels: {df['class_type'].value_counts().sort_values()}")
-print(f"Ward labels: {df['ward'].value_counts().sort_values()}")
-print(f"Actual labels: {df['average'].value_counts().sort_values()}")
-print(f"Actual labels: {df['single'].value_counts().sort_values()}")
-print(f"Actual labels: {df['complete'].value_counts().sort_values()}")
-
-
-st.markdown("""####The approach above doesn't really tell much on how accurate we have been.
- ####We can use the _confusion matrix_ to confront predicted and actual values:""")
+count = pd.DataFrame()
+# we use .values because value_counts() creates a Series object with values and indices
+# that are automatically aligned by index, in this way we align it by value.
+count["actual"] = df['class_type'].value_counts().sort_values(ascending= False).values 
+count["ward"] = df['ward'].value_counts().sort_values(ascending= False).values
+count["average"] = df['average'].value_counts().sort_values(ascending= False).values
+count["single"] = df['single'].value_counts().sort_values(ascending= False).values
+count["complete"] = df['complete'].value_counts().sort_values(ascending= False).values
+count = count.reset_index(drop = True)
+st.write(count)
+st.markdown("""The approach above doesn't really tell much on how accurate we have been.
+  We can use a __confusion matrix__ to confront predicted and actual values:""")
 
 """
 We sort the confusion matrix by taking the index of the sorted list of value 
@@ -191,10 +178,15 @@ dend_plots =[]
 """Then we can use a dendogram to visualize the division in clusters:"""
 for col in predicted_columns:
     link = hierarchy.linkage(df, method= col) # Use linkage method to construct the matrix of dendogram connections
+    # Determine the threshold to stop at 7 clusters
+    # This finds the distance where the number of clusters is exactly 7
+    cluster_threshold = sorted(link[:, 2], reverse=True)[6]  # 6th largest linkage distance corresponds to 7 clusters
+
     fig, ax = plt.subplots()
     hierarchy.dendrogram(link) 
+    ax.axhline(y=cluster_threshold, color='r', linestyle='--', label=f'7 Clusters Cut-Off')
     ax.set_title(f'{col.capitalize()} Dendrogram')
-    ax.set_xlabel('Samples')
+    ax.set_xlabel('Cluster')
     ax.set_ylabel('Distance')
     ax.set_xticks([]) # to remove the observation's labels
     dend_plots.append(fig)
@@ -212,25 +204,37 @@ Plotting.plot_organizer(dend_plots, 2, 2)
 #These three steps are automatically performed by scikit learn when applying pca.
 
 # compute the covariance matrix:
+st.write("")
+st.write("")
+st.write("")
+st.subheader("Principal Component Analysis and K-Means", divider = "grey")
 pca = PCA(12)
 pc = pca.fit_transform(df)
-print(pc.shape)
+
 explained_variance_cumulative = np.cumsum(pca.explained_variance_ratio_)
-print(explained_variance_cumulative)
+
 
 # Compute residual variance (1 - cumulative explained variance)
 residual_variance = 1 - explained_variance_cumulative
-
+st.write("Let's use the eblow graph of the residual variance to choose the perfect number of components for our use case.")
 # Plot of residual variance 
-plt.figure(figsize=(8, 5))
-plt.plot(range(1, len(residual_variance) + 1), residual_variance, marker='o', linestyle='-', color='b')
-plt.xlabel('Number of Principal Components')
-plt.ylabel('Residual Variance')
-plt.title('Elbow Graph of Residual Variance')
-plt.xticks(range(1, len(residual_variance) + 1))
-plt.grid(True)
-plt.show()
+fig, ax = plt.subplots()
+#plt.figure(figsize=(8, 5))
+ax.plot(range(1, len(residual_variance) + 1), residual_variance, marker='o', linestyle='-', color='b')
+#plt.plot(range(1, len(residual_variance) + 1), residual_variance, marker='o', linestyle='-', color='b')
+ax.set_xlabel('Number of Principal Components')
+ax.set_ylabel('Residual Variance')
+ax.set_title('Elbow Graph of Residual Variance')
+ax.set_xticks(range(1, len(residual_variance) + 1))
+ax.grid(True)
+st.pyplot(fig)
 
+st.write(f"We go for 8 principal components, explaining the {round(explained_variance_cumulative[7], 2)*100}% of the variance.")
+
+pca = PCA(8)
+pc = pca.fit_transform(df)
+
+st.write("We use a KMeans clustering method over the seven principal components with  to try to better classify animal species. The following is the confusion matrix with the results:")
 k_means = KMeans(n_clusters= 7, random_state= 42).fit(pc)
 
 
@@ -239,14 +243,15 @@ cm_sorted = cm[np.ix_(zoo['class_type'].value_counts().sort_values().index, pd.S
 fig, ax = plt.subplots()
 sns.heatmap(cm_sorted, annot=True, fmt='d', cmap='viridis')  #  annot = True means that we are annotating the results inside the cells,
 # fmt = d indicates the format that is decimals, cmap = viridis indicates the color of the cm
-ax.set_title(f'Confusion Matrix for PCA + Cluster')
+ax.set_title(f'Confusion Matrix for PCA & KMeans')
 ax.set_xlabel('Predicted Cluster')
 ax.set_ylabel('Actual Category')
 st.pyplot(fig)
 
 
 # Let's train a supervised model now to predict a new animal's class.
-st.markdown("## Let's use a _supervised model_ to predict animal species: \n Here you can play with a _TREE CLASSIFIER_")
+st.subheader("Let's use a __supervised model__ to predict animal species:", divider = "grey")
+st.write("Here you can play with a __TREE CLASSIFIER__ that has been trained on the original dataset. \n Choose your animal's attributes and the model wills spit out its species. ")
 pred_df = zoo
 zoo_dict = {}
 for i in animal_class['Class_Number']:
