@@ -175,7 +175,8 @@ for col in predicted_columns:
 Plotting.plot_organizer(plot_list, 2, 2)
 
 dend_plots =[]
-"""Then we can use a dendogram to visualize the division in clusters:"""
+st.subheader("Dendogram visualization", divider = "grey")
+"""Then we can use dendograms to visualize the division in clusters:"""
 for col in predicted_columns:
     link = hierarchy.linkage(df, method= col) # Use linkage method to construct the matrix of dendogram connections
     # Determine the threshold to stop at 7 clusters
@@ -193,15 +194,6 @@ for col in predicted_columns:
 
 
 Plotting.plot_organizer(dend_plots, 2, 2)
-# PCA + clustering
-#Since none of the hierarchical clusterings provided the results we expected, let's try with applying the principal component analysis and k means clustering on the principal components.
-#The goal of the PCA is to transform the set of correlated variables in a non-correlated variables set.
-#To apply PCA we need to:
-#  1. Compute the covariance matrix 
-#  2. Compute egenvalues and eigenvectors to understand the direction of the principal components and
-#     their strength (eigenvalues)
-#  3. Create the components
-#These three steps are automatically performed by scikit learn when applying pca.
 
 # compute the covariance matrix:
 st.write("")
@@ -350,7 +342,7 @@ for attr in attributes:
     setattr(animal, attr, st.session_state[attr])
 
 # Display chosen attributes in original order
-st.write("### Chosen attributes:")
+st.subheader("Chosen attributes:", divider = "grey")
 for attr in attributes:
     if st.session_state.get(attr, False):
         st.write(f"{attr}: {st.session_state[attr]}")
