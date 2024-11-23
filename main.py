@@ -26,23 +26,29 @@ zoo = pd.read_csv("animals_data\zoo.csv") # data we should work on
 
 
 st.title('Animal guesser')
-st.header("Let's guess the animal's species")
-st.subheader("This is a Subheader")
-st.text("""The system is going to predict the animal species based on a 
-        machine learning model. The model is a decision tree classifier trained on 
-        100 animal species """)
-st.markdown("Let's see how __the model__ behaves:")
+st.header("Brief analysis on animal species.")
+st.markdown("###### The following are some interesting information extracted from a kaggle dataset.")
+st.markdown("""[Dataset link](https://www.kaggle.com/datasets/uciml/zoo-animal-classification/data)""")
+st.markdown("###### Let's start our explorative analysis by plotting some data:")
 
 
-columns = zoo.columns 
+st.write("")
+st.write("")
+st.write("")
+
+columns = zoo.columns #Pandas uses Index objects for better performance and consistency across its DataFrames and Series, it is not a list
 
 plot = zoo.boxplot("legs", grid = False, vert = False, patch_artist = True )
-plt.show()
+plot.set_title("Box plot of legs distribution")
+fig = plot.figure # we get the figure out of the Axis object
+st.pyplot(fig)
 
 
-legs_count = zoo['legs'].value_counts().to_dict() # dictionary that counts for every possible values the occurrencies
 
-plt.pie(legs_count.values(), labels = legs_count.keys(), autopct= '%1.0f%%',
+legs_count = zoo['legs'].value_counts().to_dict() # dictionary that counts the occurrencies for every possible values
+
+fig, ax = plt.subplots()
+ax.pie(legs_count.values(), labels = legs_count.keys(), autopct= '%1.0f%%',
         colors = ["#7EC8E3", 
                   "#5B92E5", 
                   "#3C69E7", 
@@ -50,7 +56,8 @@ plt.pie(legs_count.values(), labels = legs_count.keys(), autopct= '%1.0f%%',
                   "#1B3A93", 
                   "#12275E"]
 )
-plt.show()
+
+st.pyplot(fig)
 
 def percentage(column_name):
     percent = int(zoo[column_name].sum()) / 101 
@@ -70,10 +77,12 @@ for element in columns:
     ax.set_title(f"{element.capitalize()}, {round(perc, 2)}% of the dataset's animals")
     plots.append(fig)
 
-rows = 5
-cols = 3
 
-Plotting.plot_organizer(plots, rows, cols)
+# Window menu
+scelta = st.selectbox('Scegli un\'opzione:', columns)
+indice = columns.get_loc(scelta) # get_loc() is optimized for Index objects and avoids the overhead of conversion.
+
+Plotting.show_plot(plots, indice, figsize=(8,6))
 
 
 mask = zoo['catsize'] == True
@@ -252,7 +261,7 @@ print(pred_df)
 
 X = pred_df.drop(columns = ['animal_name','class_type'])
 Y = pred_df['class_type']
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2 ,random_state = 42)
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.01 ,random_state = 42)
 print(X.info())
 
 animal = Animal()
@@ -264,17 +273,19 @@ classifier = AnimalClassifier()
 
 classifier.train(X= x_train, y= y_train)
 
+
 attributes = [
     "hair", "feathers", "eggs", "milk", "predator", "airborne", "toothed",
-    "backbone", "breathes", "venomous", "fins", "legs", "tail", "aquatic",
-    "domestic", "catsize"
+    "backbone", "breathes", "venomous", "fins", "tail", "aquatic",
+    "domestic", "catsize", "legs"
 ]
 
+# Initialize session state for each attribute
 for attr in attributes:
     if attr not in st.session_state:
         st.session_state[attr] = False
 
-
+# Create buttons for attributes
 hair, feathers, eggs, milk = st.columns(4)
 if hair.button("Hair", use_container_width=True):
     st.session_state["hair"] = not st.session_state["hair"]
@@ -301,10 +312,20 @@ if toothed.button("toothed", use_container_width=True):
 if backbone.button("backbone", use_container_width=True):
     st.session_state["backbone"] = not st.session_state["backbone"]
     
-tail, acquatic, domestic, catsize = st.columns(4)   
+breathes, venomous, fins, tail = st.columns(4)
+if breathes.button("breathes", use_container_width=True):
+    st.session_state["breathes"] = not st.session_state["breathes"]
+    
+if venomous.button("venomous", use_container_width=True):
+    st.session_state["venomous"] = not st.session_state["venomous"]
+    
+if fins.button("fins", use_container_width=True):
+    st.session_state["fins"] = not st.session_state["fins"]
+  
 if tail.button("tail", use_container_width=True):
     st.session_state["tail"] = not st.session_state["tail"]
-    
+
+acquatic, domestic, catsize = st.columns(3)    
 if acquatic.button("acquatic", use_container_width=True):
     st.session_state["aquatic"] = not st.session_state["aquatic"]
     
@@ -314,32 +335,21 @@ if domestic.button("domestic", use_container_width=True):
 if catsize.button("catsize", use_container_width=True):
     st.session_state["catsize"] = not st.session_state["catsize"]
 
-breathes, venomous, fins = st.columns(3)
-if breathes.button("breathes", use_container_width=True):
-    st.session_state["breathes"] = not st.session_state["breathes"]
-    
-if venomous.button("venomous", use_container_width=True):
-    st.session_state["venomous"] = not st.session_state["venomous"]
-    
-if fins.button("fins", use_container_width=True):
-    st.session_state["fins"] = not st.session_state["fins"]
-
+# Slider for legs
 left, middle, centre = st.columns(3) 
-selected_legs =middle.slider("legs",0, 8, 1)
+selected_legs = middle.slider("legs", 0, 8, 1)
 st.session_state["legs"] = selected_legs
 
-    
-
-
-st.write("### Chosen attributes:")
-for key, value in st.session_state.items():
-    if value:
-        st.write(f"{key}: {value}")
 
 for attr in attributes:
     setattr(animal, attr, st.session_state[attr])
 
+# Display chosen attributes in original order
+st.write("### Chosen attributes:")
+for attr in attributes:
+    if st.session_state.get(attr, False):
+        st.write(f"{attr}: {st.session_state[attr]}")
 
-# col1, col2, col3 = st.columns(3)
+# Predict button
 if st.button("Predict"):
     st.markdown(classifier.predict(animal=animal))

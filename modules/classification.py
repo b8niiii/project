@@ -10,8 +10,8 @@ class Animal:
     """
     def __init__(self, 
                  hair=False, feathers=False, eggs=False, milk=False, predator=False,airborne = False, toothed=False, 
-                 backbone=False, breathes=False, venomous=False, fins=False, legs=0, tail=False, aquatic = False,
-                 domestic=False, catsize=False):
+                 backbone=False, breathes=False, venomous=False, fins=False, tail=False, aquatic = False,
+                 domestic=False, catsize=False, legs=0):
         self.hair = hair
         self.feathers = feathers
         self.eggs = eggs
@@ -39,9 +39,9 @@ class Animal:
             int(self.hair), int(self.feathers), int(self.eggs),
             int(self.milk), int(self.predator), int(self.airborne),
             int(self.toothed), int(self.backbone), int(self.breathes),
-            int(self.venomous), int(self.fins), int(self.legs),
+            int(self.venomous), int(self.fins),
             int(self.tail), int(self.aquatic), int(self.domestic),
-            int(self.catsize)]])
+            int(self.catsize), int(self.legs)]])
 
 class AnimalClassifier:
     """
