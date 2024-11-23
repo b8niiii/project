@@ -16,14 +16,6 @@ class DataProcessor:
         """
         self.zoo = pd.read_csv(self.zoo_path)
         self.animal_class = pd.read_csv(self.class_path)
-
-    def preprocess_data(self):
-        """
-        Performs any preprocessing steps required.
-        """
-        # Example: Remove unnecessary columns, handle missing values, etc.
-        pass
-
     def get_data(self):
         """
         Returns the loaded data.

@@ -9,7 +9,7 @@ class ClusteringModels:
         self.data = data
         self.pca = None
         self.kmeans = None
-        self.agglomerative_models = {}
+        self.agglomerative_models = {} # to store distance methods as keys and clustering labels as values
         self.pca_data = None
 
     def perform_pca(self, n_components):
