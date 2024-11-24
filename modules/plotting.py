@@ -41,6 +41,8 @@ class Plotting:
                         st.pyplot(list[index])
 
     @staticmethod
+
+  
     def show_plot(list: list, i:int, figsize = (8,6), download_label = "Download Plot"):
         """
         Displays a single plot from a list of plots in a Streamlit app.

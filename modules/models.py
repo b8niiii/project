@@ -1,5 +1,6 @@
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.decomposition import PCA
+import numpy as np
 
 class ClusteringModels:
     """
@@ -14,11 +15,17 @@ class ClusteringModels:
 
     def perform_pca(self, n_components):
         """
-        Performs PCA on the data.
+        Performs PCA on the data and returns the transformed data along with residual variance.
         """
         self.pca = PCA(n_components=n_components)
         self.pca_data = self.pca.fit_transform(self.data)
-        return self.pca_data
+        
+        # Calculate the residual variance
+        explained_variance = np.cumsum(self.pca.explained_variance_ratio_)
+       
+        
+        return self.pca_data, explained_variance
+
 
     def perform_kmeans(self, n_clusters):
         """
