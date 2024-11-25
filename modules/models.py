@@ -7,6 +7,29 @@ class ClusteringModels:
     Handles clustering algorithms and PCA.
     """
     def __init__(self, data):
+        """
+        Initializes the ClusteringModels object with the dataset and placeholders 
+        for PCA and clustering models.
+
+        Parameters:
+        -----------
+        data : pandas.DataFrame or numpy.ndarray
+            The dataset to be used for PCA and clustering.
+        
+        Attributes:
+        -----------
+        data : pandas.DataFrame or numpy.ndarray
+            The input dataset.
+        pca : sklearn.decomposition.PCA or None
+            Placeholder for the PCA model after initialization.
+        kmeans : sklearn.cluster.KMeans or None
+            Placeholder for the KMeans clustering model after initialization.
+        agglomerative_models : dict
+            A dictionary to store Agglomerative Clustering models, where keys are 
+            linkage methods (e.g., 'ward', 'single', 'complete') and values are clustering labels.
+        pca_data : numpy.ndarray or None
+            The transformed dataset after applying PCA.
+        """
         self.data = data
         self.pca = None
         self.kmeans = None
