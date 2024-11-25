@@ -133,8 +133,12 @@ def main():
         "toothed", "backbone", "breathes", "venomous", "fins",
         "tail", "domestic", "catsize", "legs"
     ]
-
+    zoo_dict = {}
+    for i in animal_class['Class_Number']:
+        zoo_dict[i] = animal_class['Class_Type'][i-1]
+    
     animal = Animal()
+
     create_attribute_inputs(animal, attributes)
     st.write("### Chosen attributes:")
     for attr in attributes:
@@ -144,6 +148,7 @@ def main():
     # Predict Button
     if st.button("Predict"):
         prediction = classifier.predict(animal)
+        prediction = zoo_dict.get(prediction)
         st.markdown(f"### Predicted Class: {prediction}")
 
 def create_attribute_inputs(animal, attributes):
