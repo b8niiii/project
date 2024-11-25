@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 from main import load_and_prepare_data, perform_clustering, train_classifier, compare_methods
 from modules.visualization import Visualization, Plotting
@@ -7,7 +5,7 @@ from modules.classification import Animal
 from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn.decomposition import PCA
-from sklearn.cluster import AgglomerativeClustering, KMeans
+from sklearn.cluster import KMeans
 import pandas as pd
 
 
@@ -64,6 +62,7 @@ def main():
     # Perform Clustering 
     pca_data, kmeans_labels, agglomerative_labels, explained_variance = perform_clustering(
         zoo.drop(columns=['animal_name', 'class_type']))
+    
     st.subheader("Developing of Unsupervised Machine Learning Methods")
     st.subheader("Agglomerative Clustering", divider = "grey")
     st.markdown("""__Agglomerative clustering__ is the type of __hierarchical clustering__ that creates clusters
@@ -83,9 +82,11 @@ def main():
     st.dataframe(df)
     predicted_columns = ["ward", "average", "single", "complete"]
     plot_list = []
+    # Append confusion matrices into a list
     for col in predicted_columns:
-        cm = confusion_matrix(label_df[col], label_df["actual_label"])
-        cm_sorted = cm[np.ix_(label_df[col].value_counts().sort_values().index,label_df['actual_label'].value_counts().sort_values().index)]
+        cm = confusion_matrix(label_df[col], label_df["actual_label"]) #ndarray
+        cm_sorted = cm[np.ix_(label_df[col].value_counts().sort_values().index,label_df['actual_label'].value_counts().sort_values().index)] 
+        #np.ix_ creates an indexer (mash) usefulll to perform operations
         plot = Visualization.plot_confusion_matrix(cm_sorted, "Confusion Matrix of {col}")
         plot_list.append(plot)
 
@@ -147,12 +148,12 @@ def create_attribute_inputs(animal, attributes):
     """
     # Initialize session state for each attribute
     for attr in attributes:
-        if attr not in st.session_state:
+        if attr not in st.session_state: # similar to a python dictionary
             st.session_state[attr] = False
 
     # Create input widgets
     cols = st.columns(4)
-    for idx, attr in enumerate(attributes):
+    for idx, attr in enumerate(attributes): 
         if attr != 'legs':
             with cols[idx % 4]:
                 st.session_state[attr] = st.checkbox(attr.capitalize(), value=st.session_state[attr])
