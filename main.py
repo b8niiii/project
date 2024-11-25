@@ -50,8 +50,6 @@ def train_classifier(zoo_data):
     return classifier
 
 
-"""I think we can get rid of these lines"""
-
 if __name__ == '__main__': # if the module is beign run directly
     # Load and prepare data
     zoo, animal_class = load_and_prepare_data()

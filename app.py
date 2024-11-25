@@ -2,9 +2,8 @@
 
 import streamlit as st
 from main import load_and_prepare_data, perform_clustering, train_classifier, compare_methods
-from modules.visualization import Visualization
+from modules.visualization import Visualization, Plotting
 from modules.classification import Animal
-from modules.plotting import Plotting
 from sklearn.metrics import confusion_matrix
 import numpy as np
 from sklearn.decomposition import PCA
