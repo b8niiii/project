@@ -96,7 +96,7 @@ def main():
     dend_plots = []
     st.subheader("Visualization with dendograms", divider = "grey")
     for col in predicted_columns:
-        plot = Visualization.plot_dendrogram(col, label_df, f"{col.capitalize()} Dendogra,", 6)
+        plot = Visualization.plot_dendrogram(col, zoo[columns], f"{col.capitalize()} Dendogram", 6)
         dend_plots.append(plot)
 
     Plotting.plot_organizer(dend_plots, 2, 2)
@@ -136,6 +136,10 @@ def main():
 
     animal = Animal()
     create_attribute_inputs(animal, attributes)
+    st.write("### Chosen attributes:")
+    for attr in attributes:
+        if st.session_state.get(attr, False):
+            st.write(f"{attr}: {st.session_state[attr]}")
 
     # Predict Button
     if st.button("Predict"):

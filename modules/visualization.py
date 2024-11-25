@@ -102,11 +102,12 @@ class Visualization:
         matplotlib.figure.Figure
             The figure object containing the dendrogram.
         """
-        link = hierarchy.linkage(df, method = method)
+        link = hierarchy.linkage(df, method = method) # Use linkage method to construct the matrix of dendogram connections
         fig, ax = plt.subplots()
-        hierarchy.dendrogram(link, ax=ax)
+        hierarchy.dendrogram(link)
         if cluster_threshold:
-            sorted(link[:, 2], reverse = True)[cluster_threshold] #sixth largest linkage distance = 7th cluster
+            cluster_threshold = sorted(link[:, 2], reverse=True)[cluster_threshold]
+            ax.axhline(y=cluster_threshold, color = "r", )
         ax.set_title(title)
         ax.set_xlabel('Cluster')
         ax.set_ylabel('Distance')
