@@ -37,22 +37,46 @@ class ClusteringModels:
         self.pca_data = None
 
     def perform_pca(self, n_components):
+         """
+        Performs Principal Component Analysis (PCA) on the dataset.
+
+        Parameters:
+        -----------
+        n_components : int
+            The number of principal components to retain.
+
+        Returns:
+        --------
+        tuple
+            A tuple containing:
+            - pca_data : numpy.ndarray
+                The dataset transformed into the principal component space.
+            - explained_variance : numpy.ndarray
+                The cumulative explained variance for each principal component.
         """
-        Performs PCA on the data and returns the transformed data along with residual variance.
-        """
-        self.pca = PCA(n_components=n_components)
-        self.pca_data = self.pca.fit_transform(self.data)
+         self.pca = PCA(n_components=n_components)
+         self.pca_data = self.pca.fit_transform(self.data)
         
         # Calculate the residual variance
-        explained_variance = np.cumsum(self.pca.explained_variance_ratio_)
+         explained_variance = np.cumsum(self.pca.explained_variance_ratio_)
        
         
-        return self.pca_data, explained_variance
+         return self.pca_data, explained_variance
 
 
     def perform_kmeans(self, n_clusters):
         """
-        Performs KMeans clustering.
+        Performs KMeans clustering on the PCA-transformed data.
+
+        Parameters:
+        -----------
+        n_clusters : int
+            The number of clusters to form.
+
+        Returns:
+        --------
+        numpy.ndarray
+            An array of cluster labels for each data point.
         """
         self.kmeans = KMeans(n_clusters=n_clusters, random_state=42)
         self.kmeans.fit(self.pca_data)
@@ -60,7 +84,19 @@ class ClusteringModels:
 
     def perform_agglomerative_clustering(self, n_clusters, linkage_methods):
         """
-        Performs Agglomerative Clustering with different linkage methods.
+        Performs Agglomerative Clustering with specified linkage methods.
+
+        Parameters:
+        -----------
+        n_clusters : int
+            The number of clusters to form.
+        linkage_methods : list of str
+            A list of linkage methods to use for clustering (e.g., 'ward', 'single', 'complete').
+
+        Returns:
+        --------
+        dict
+            A dictionary where keys are linkage methods and values are arrays of cluster labels.
         """
         for method in linkage_methods:
             model = AgglomerativeClustering(n_clusters=n_clusters, linkage=method)
